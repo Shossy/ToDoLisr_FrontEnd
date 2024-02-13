@@ -1,26 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
+import ToDoTask from "./models/ToDoTasks/ToDoTask.model";
+import ToDoTasksApi from "./app/api/ToDoTask/ToDoTasks.api";
+import ButtonAppBar from "./features/ToDoTasksPage/AppBar/ButtonAppBar";
+import ToDoTaskForm from './features/ToDoTasksPage/ToDoTaskForm/ToDoTaskForm';
+import ToDoTaskList from './features/ToDoTasksPage/ToDoTaskList/ToDoTaskList';
+import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
+
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+});
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [taskList, setTaskList] = useState<ToDoTask[]>();
+    const fetchData = () => {
+        ToDoTasksApi.getAll()
+            .then(response => {
+                setTaskList(response);
+                console.log(response);
+            })
+            .catch((error) => {
+                // Handle errors
+                console.error('API Error:', error);
+            });
+    }
+
+    return (
+        <ThemeProvider theme={darkTheme}>
+            <CssBaseline/>
+            <ButtonAppBar fetchData={fetchData}></ButtonAppBar>
+            <ToDoTaskList taskList={taskList} fetchData={fetchData}></ToDoTaskList>
+        </ThemeProvider>
+
+    );
 }
 
 export default App;
