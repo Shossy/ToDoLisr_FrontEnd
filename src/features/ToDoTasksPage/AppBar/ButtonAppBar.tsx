@@ -62,7 +62,6 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({fetchData}) => {
             </Box>
             <ToDoTaskForm open={isDialogOpen}
                           onClose={handleCloseDialog}
-                          fetchData={fetchData}
                           button={{label: "Create", func: handleCreateTask}}
                           taskData={taskData}
                           setTaskData={setTaskData}/>

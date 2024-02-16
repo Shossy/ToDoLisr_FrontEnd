@@ -1,5 +1,5 @@
 
-import React, {useEffect, useState} from "react";
+import React, { useState} from "react";
 import Button from "@mui/material/Button";
 import {
     Dialog,
@@ -11,18 +11,17 @@ import {
     MenuItem, Select,
     TextField
 } from "@mui/material";
-import ToDoTask, {
+import  {
     Priority,
     Status,
     ToDoTaskCreateUpdateRequest
 } from "../../../models/ToDoTasks/ToDoTask.model";
-import ToDoTasksApi from "../../../app/api/ToDoTask/ToDoTasks.api";
+
 
 
 interface DialogProps {
     open: boolean;
     onClose: () => void;
-    fetchData: () => void;
     button: {
         label: string;
         func: (taskData: ToDoTaskCreateUpdateRequest) => void;
@@ -32,8 +31,8 @@ interface DialogProps {
 }
 
 
-const TaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData, button, taskData, setTaskData}) => {
-
+const TaskForm: React.FC<DialogProps> = ({ open, onClose, button, taskData, setTaskData}) => {
+    const [isFailedSubmit, setFailedSubmit] = useState<boolean>(false)
 
     const reset = () => {
         setTaskData({
@@ -52,12 +51,31 @@ const TaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData, button, tas
         setTaskData((prevData) => ({ ...prevData, [fieldName]: value }));
     };
 
+    const validateForm = () =>{
+        if (taskData.title.trim() === '' ||
+            taskData.description.trim() === '' ||
+            taskData.dueDateTime.trim() === '' ||
+            taskData.startDateTime.trim() === ''){
+            setFailedSubmit(true);
+            return false;
+        }
+        return true;
+    }
 
+    const handleSubmit = () =>{
+
+
+        if (validateForm()){
+            button.func(taskData);
+            reset();
+            onClose();
+        }
+    }
 
     return (
         <div>
             <Dialog open={open}>
-                <DialogTitle>Create New Task</DialogTitle>
+                <DialogTitle>Task View</DialogTitle>
                 <DialogContent>
                     <TextField
                         margin="dense"
@@ -66,6 +84,8 @@ const TaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData, button, tas
                         value={taskData.title}
                         onChange={(e) => handleInputChange('title', e.target.value)}
                         inputProps={{ maxLength: 50 }}
+                        error={taskData.title.trim() === '' && isFailedSubmit}
+                        helperText={taskData.title.trim() === '' && isFailedSubmit ? 'Title is required' : ''}
                     />
                     <TextField
                         margin="dense"
@@ -75,6 +95,8 @@ const TaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData, button, tas
                         value={taskData.description}
                         onChange={(e) => handleInputChange('description', e.target.value)}
                         inputProps={{ maxLength: 255 }}
+                        error={taskData.description.trim() === '' && isFailedSubmit}
+                        helperText={taskData.description.trim() === '' && isFailedSubmit ? 'Description is required' : ''}
                     />
                     <TextField
                         margin="dense"
@@ -84,11 +106,14 @@ const TaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData, button, tas
                         InputLabelProps={{ shrink: true }}
                         InputProps={{
                             inputProps: {
+                                min: today,
                                 max: taskData.dueDateTime,
                             },
                         }}
                         value={taskData.startDateTime}
                         onChange={(e) => handleInputChange('startDateTime', e.target.value)}
+                        error={taskData.startDateTime.trim() === '' && isFailedSubmit}
+                        helperText={taskData.startDateTime.trim() === '' && isFailedSubmit ? 'StartDate is required' : ''}
                     />
                     <TextField
                         margin="dense"
@@ -103,6 +128,8 @@ const TaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData, button, tas
                         }}
                         value={taskData.dueDateTime}
                         onChange={(e) => handleInputChange('dueDateTime', e.target.value)}
+                        error={taskData.dueDateTime.trim() === '' && isFailedSubmit}
+                        helperText={taskData.dueDateTime.trim() === '' && isFailedSubmit ? 'DueDate is required' : ''}
                     />
                     <FormControl fullWidth margin="dense" >
                         <InputLabel>Priority</InputLabel>
@@ -130,8 +157,11 @@ const TaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData, button, tas
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={()=>{console.log(taskData);reset(); onClose()}}>Cancel</Button>
-                    <Button onClick={() => {button.func(taskData); reset(); onClose()}} color="primary">
+                    <Button onClick={()=>{setFailedSubmit(false);reset(); onClose()}}>Cancel</Button>
+                    <Button onClick={() => {
+                            handleSubmit();
+                        }
+                    } color="primary">
                         {button.label}
                     </Button>
                 </DialogActions>

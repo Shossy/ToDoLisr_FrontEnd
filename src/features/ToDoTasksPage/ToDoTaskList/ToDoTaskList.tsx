@@ -1,15 +1,11 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
 import ToDoTasksApi from "../../../app/api/ToDoTask/ToDoTasks.api";
 import ToDoTask, {Priority, Status, ToDoTaskCreateUpdateRequest} from "../../../models/ToDoTasks/ToDoTask.model";
 import "./ToDoTaskList.css"
 import Typography from "@mui/material/Typography";
-import {IconButton} from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
+
 
 import TaskForm from "../ToDoTaskForm/ToDoTaskForm";
 import ToDoTaskCard from "../ToDoTaskCard/ToDoTaskCard";
@@ -67,7 +63,8 @@ const InsetList: React.FC<ListProps> = ({taskList, fetchData}) => {
                         aria-label="contacts"
                     >
                         {toDoTasks?.map((value, index) => {
-                            return <ToDoTaskCard value={value}
+                            return <ToDoTaskCard key={index}
+                                                 value={value}
                                                  setTaskData={setTaskData}
                                                  setIdCurrent={setIdCurrent}
                                                  setDialogOpen={setDialogOpen}
@@ -86,7 +83,8 @@ const InsetList: React.FC<ListProps> = ({taskList, fetchData}) => {
                         aria-label="contacts"
                     >
                         {inProgressTasks?.map((value, index) => {
-                            return <ToDoTaskCard value={value}
+                            return <ToDoTaskCard key={index}
+                                                 value={value}
                                                  setTaskData={setTaskData}
                                                  setIdCurrent={setIdCurrent}
                                                  setDialogOpen={setDialogOpen}
@@ -104,7 +102,8 @@ const InsetList: React.FC<ListProps> = ({taskList, fetchData}) => {
                         aria-label="contacts"
                     >
                         {doneTasks?.map((value, index) => {
-                            return <ToDoTaskCard value={value}
+                            return <ToDoTaskCard key={index}
+                                                 value={value}
                                                  setTaskData={setTaskData}
                                                  setIdCurrent={setIdCurrent}
                                                  setDialogOpen={setDialogOpen}
@@ -118,7 +117,6 @@ const InsetList: React.FC<ListProps> = ({taskList, fetchData}) => {
             <TaskForm open={isDialogOpen}
                       onClose={() => setDialogOpen(false)}
                       button={{label: "Save", func: handleUpdate}}
-                      fetchData={fetchData}
                       taskData={taskData}
                       setTaskData={setTaskData}
             ></TaskForm>
