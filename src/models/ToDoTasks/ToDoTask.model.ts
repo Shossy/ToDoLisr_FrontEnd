@@ -9,7 +9,7 @@ export default interface ToDoTask {
 
 }
 
-export interface ToDoTaskUpdateRequest{
+export interface ToDoTaskCreateUpdateRequest{
     title:string;
     description:string;
     startDateTime:string;
@@ -18,14 +18,7 @@ export interface ToDoTaskUpdateRequest{
     status:Status;
 }
 
-export interface ToDoTaskCreateRequest{
-    title:string;
-    description:string;
-    startDateTime:string;
-    dueDateTime:string;
-    priority:Priority;
-    status:Status;
-}
+
 
 
 export enum Priority{

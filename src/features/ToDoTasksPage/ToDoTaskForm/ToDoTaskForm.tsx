@@ -1,5 +1,5 @@
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
 import {
     Dialog,
@@ -11,7 +11,11 @@ import {
     MenuItem, Select,
     TextField
 } from "@mui/material";
-import {Priority, Status, ToDoTaskCreateRequest} from "../../../models/ToDoTasks/ToDoTask.model";
+import ToDoTask, {
+    Priority,
+    Status,
+    ToDoTaskCreateUpdateRequest
+} from "../../../models/ToDoTasks/ToDoTask.model";
 import ToDoTasksApi from "../../../app/api/ToDoTask/ToDoTasks.api";
 
 
@@ -19,41 +23,36 @@ interface DialogProps {
     open: boolean;
     onClose: () => void;
     fetchData: () => void;
+    button: {
+        label: string;
+        func: (taskData: ToDoTaskCreateUpdateRequest) => void;
+    }
+    taskData: ToDoTaskCreateUpdateRequest;
+    setTaskData: React.Dispatch<React.SetStateAction<ToDoTaskCreateUpdateRequest>>;
 }
 
 
-const CreateTaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData}) => {
-    const [taskData, setTaskData] = useState<ToDoTaskCreateRequest>({
-        title: '',
-        description: '',
-        startDateTime: '',
-        dueDateTime: '',
-        priority: Priority.High,
-        status: Status.ToDo,
-    });
+const TaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData, button, taskData, setTaskData}) => {
+
+
+    const reset = () => {
+        setTaskData({
+            title: '',
+            description: '',
+            startDateTime: '',
+            dueDateTime: '',
+            priority: Priority.High,
+            status: Status.ToDo,
+        })
+    }
 
     const today = new Date().toISOString().split('T')[0];
 
-    const handleInputChange = (fieldName: keyof ToDoTaskCreateRequest, value: string) => {
+    const handleInputChange = (fieldName: keyof ToDoTaskCreateUpdateRequest, value: string) => {
         setTaskData((prevData) => ({ ...prevData, [fieldName]: value }));
     };
 
-    const handleCreateTask = async () => {
-        // Validate the form data or perform any other necessary checks
-        // Your logic to create the task goes here
-        console.log('Task created!', taskData);
-        // eslint-disable-next-line no-lone-blocks
-        {/*onTaskCreate(taskData);*/}
-        await ToDoTasksApi.create(taskData)
-            .then(response => console.log(response))
-            .catch((error) => {
-            // Handle errors
-            console.error('API Error:', error);
-        });
-        fetchData();
 
-        onClose();
-    };
 
     return (
         <div>
@@ -85,7 +84,6 @@ const CreateTaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData}) => {
                         InputLabelProps={{ shrink: true }}
                         InputProps={{
                             inputProps: {
-                                min: today,
                                 max: taskData.dueDateTime,
                             },
                         }}
@@ -132,9 +130,9 @@ const CreateTaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData}) => {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onClose}>Cancel</Button>
-                    <Button onClick={handleCreateTask} color="primary">
-                        Create
+                    <Button onClick={()=>{console.log(taskData);reset(); onClose()}}>Cancel</Button>
+                    <Button onClick={() => {button.func(taskData); reset(); onClose()}} color="primary">
+                        {button.label}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -142,4 +140,4 @@ const CreateTaskForm: React.FC<DialogProps> = ({ open, onClose, fetchData}) => {
     );
 };
 
-export default CreateTaskForm;
+export default TaskForm;
